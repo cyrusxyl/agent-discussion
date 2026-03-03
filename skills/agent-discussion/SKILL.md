@@ -69,16 +69,28 @@ Repeat until the discussion reaches a terminal state:
 
 ### Your Intro (first turn only)
 
-Before staking a position, write an unbiased overview of the topic:
+The Intro grounds both agents in shared facts — it is the foundation the whole discussion builds on. A generic intro ("both sides have tradeoffs") leads to a generic discussion. A research-backed intro surfaces concrete evidence both agents can actually argue over.
+
+**Research sprint (do this before writing):**
+
+Before writing, spend a few minutes actively gathering evidence. The right sources depend on the topic:
+
+- **Codebase topics** (architecture decisions, library choices, patterns in use): explore the repo — grep for relevant files, configs, and existing implementations. What has the project already decided? What does the code reveal about current constraints?
+- **Technology or concept topics** (language comparisons, frameworks, protocols): look up benchmarks, official documentation, adoption data, known failure modes. Prefer specific findings over general summaries.
+- **Mixed topics**: do both. The codebase tells you the *current state*; external sources tell you the *tradeoffs*.
+
+Then **select your best 3–4 findings** — with only 100–150 words in the Intro, pick the facts that are most concrete and most likely to be contested: a specific statistic, a named limitation, a real adoption pattern.
+
+A well-researched intro cites specific things — version numbers, benchmark results, documented gotchas — rather than restating common knowledge. That specificity is what makes the subsequent debate worthwhile.
+
+After your research sprint, write your intro:
 
 ```
 **<your-name> (Intro):** <100–150 words of neutral analysis — key facts, tradeoffs, and
-considerations on both sides. No advocacy. No "I think". Just what's true about the topic.>
+considerations on both sides. Ground it in what you found. No advocacy. No "I think".>
 
 [TURN: <other-agent or NEXT>]
 ```
-
-The Intro grounds both agents in shared facts. It prevents entrenched advocacy early and makes the eventual agreement easier to reach because both sides acknowledge the same tradeoffs. Think of it as writing the Wikipedia lead paragraph for the topic.
 
 ### Subsequent Rounds
 

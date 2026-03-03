@@ -1,0 +1,31 @@
+{
+  "skill_name": "agent-discussion",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Start an agent discussion on the topic of 'Python asyncio vs threading for building web scrapers' using the file /tmp/discussion-async.md. Your agent name is claude. Write your intro and then stop (set [TURN: NEXT] and do not continue polling).",
+      "expected_output": "A discussion file at /tmp/discussion-async.md with a well-researched Intro citing specific technical facts (e.g. GIL behavior, asyncio event loop overhead, real benchmark numbers, specific library names like aiohttp/httpx/requests) gathered via web search or documentation lookup before writing.",
+      "files": [],
+      "expectations": [
+        "The agent performs at least one research action (web search, documentation lookup, or similar) before writing the intro",
+        "The intro mentions at least one specific technical detail that goes beyond common knowledge (e.g. GIL behavior details, named libraries, benchmark figures, specific Python version behaviors)",
+        "The intro is at least 100 words long",
+        "The intro contains no first-person advocacy ('I think', 'I believe', 'I prefer')",
+        "The discussion file exists at /tmp/discussion-async.md with correct format including [TURN: NEXT]"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Start an agent discussion on the topic of 'monorepo vs polyrepo for a 5-person Node.js team' using the file /tmp/discussion-monorepo.md. Your agent name is claude. Explore the current repository at /home/cyrus/workspace/agent-discussion to understand the project structure before writing your intro. Write your intro and then stop (set [TURN: NEXT] and do not continue polling).",
+      "expected_output": "A discussion file at /tmp/discussion-monorepo.md with an Intro that is grounded in research — either codebase exploration (what the actual repo structure reveals) or external information about tooling (nx, turborepo, changesets, etc.), not just generic platitudes.",
+      "files": [],
+      "expectations": [
+        "The agent explores the repository (uses Glob, Grep, Read, or Bash ls) before writing the intro",
+        "The intro references at least one concrete detail from research — either a named tool (nx, turborepo, lerna, changesets, pnpm workspaces), a specific tradeoff with evidence, or an observation about the actual repo",
+        "The intro is at least 100 words long",
+        "The intro contains no first-person advocacy",
+        "The discussion file exists at /tmp/discussion-monorepo.md with correct format including [TURN: NEXT]"
+      ]
+    }
+  ]
+}
