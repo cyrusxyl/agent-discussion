@@ -9,7 +9,7 @@ description: >
 
 # Agent Discussion
 
-You coordinate a multi-agent discussion by reading and appending to a shared file. Run this process **autonomously** — the user should not need to intervene after setup.
+You coordinate a multi-agent discussion by reading and appending to a shared file. Your job is to run the entire discussion loop autonomously — setup briefly with the user, then disappear into the loop and don't come back until the discussion reaches a conclusion. The user should be able to walk away after setup.
 
 ## Setup
 
@@ -23,9 +23,9 @@ Collect three pieces of information. If provided inline (e.g. `/agent-discussion
 
 Check whether the discussion file already exists.
 
-**File doesn't exist** → You are the first agent. Ask for the topic, create the file using the format below, and take your first turn immediately.
+**File doesn't exist** → You are the first agent. Create the file using the format below, take your first turn, then enter the loop immediately — no need to report back to the user at this point.
 
-**File exists** → You are joining. Read the file, tell the user the topic, and enter the loop.
+**File exists** → You are joining. Read the file to learn the topic (a single brief confirmation to the user is fine: "Joining discussion on X"), then enter the loop immediately.
 
 ### Creating the File
 
@@ -41,22 +41,32 @@ Then take your first turn right away.
 
 ## The Loop
 
-Repeat until the discussion reaches a terminal state:
+After your first turn (and immediately after joining), enter this loop and stay in it. Do not pause between rounds to report to the user — run silently until the discussion reaches a conclusion.
+
+### Waiting for your turn
+
+Use the bundled watcher script to block efficiently on file changes rather than polling on a timer:
+
+```bash
+bash <skill-dir>/scripts/watch_turn.sh <file> <your-name>
+# exit 0 → it's your turn
+# exit 1 → discussion over (AGREED or DEADLOCKED)
+```
+
+The script uses `inotifywait` (Linux) for event-driven watching with zero CPU — it only wakes up when the file actually changes. If `inotifywait` isn't available it falls back to checking the file's modification time every 3 seconds. Either way it blocks silently until something happens, so you don't need to manage sleep timers yourself.
+
+`<skill-dir>` is the directory containing this SKILL.md file. If you don't know the path, locate it with: `find ~ -name "watch_turn.sh" -path "*/agent-discussion/scripts/*" 2>/dev/null | head -1`
+
+### The full loop
 
 ```
-1. Read only the last ~25 lines of the file (fast check)
-2. Find the last [TURN:…], [AGREED:…], or [DEADLOCKED] line
-3. [AGREED] or [DEADLOCKED]  → print the outcome, stop
-4. [TURN: you]               → take your turn (see below)
-5. [TURN: other] or [TURN: NEXT] → wait ~10 seconds, go to step 1
-6. If round count > 12       → write [DEADLOCKED] and stop
+1. Run watch_turn.sh — it blocks until the file changes
+2. Exit 1 (AGREED/DEADLOCKED) → report outcome to the user, stop
+3. Exit 0 (your turn)         → take your turn (see below), then go to step 1
+4. If round count > 12        → write [DEADLOCKED], report to user, stop
 ```
 
-**Read only the last ~25 lines during polling.** Reading the full file every cycle wastes tokens over a long discussion. Reserve a full read for when it's actually your turn.
-
-> **Tip (bash):** `tail -n 25 ./discussion.md` is an efficient way to poll. Other platforms can read the file and focus on the final section.
-
-**Waiting for a partner:** If you see `[TURN: NEXT]` unchanged across three consecutive polls, let the user know the discussion is waiting for another agent to join. Continue waiting — don't quit.
+**Waiting for a partner:** If `[TURN: NEXT]` is still the last marker after several watcher cycles, let the user know the discussion is waiting for another agent to join, then keep the loop running — don't quit. The other agent will write to the file when it joins, and the watcher will wake you up.
 
 ## Taking Your Turn
 
@@ -66,6 +76,7 @@ Repeat until the discussion reaches a terminal state:
    - **Not found** → write your Intro (see below) before taking any position
    - **Found** → write your next Round (determine N from the highest `Round N` in the file; yours is N+1)
 4. Append to the end of the file using the appropriate format below.
+5. Go back to step 1 of the loop (run watch_turn.sh again) — do not surface to the user.
 
 ### Your Intro (first turn only)
 
@@ -118,6 +129,8 @@ When you genuinely agree with the other agent's position (not before Round 3):
 [AGREED: <summary>]
 ```
 
+Then report back to the user: show them the agreed summary and the final discussion file path.
+
 ## Deadlock
 
 If you reach Round 12 without agreement, or the conversation has clearly stalled:
@@ -129,6 +142,8 @@ If you reach Round 12 without agreement, or the conversation has clearly stalled
 
 [DEADLOCKED]
 ```
+
+Then report back to the user: summarise the unresolved points and ask if they want to intervene or let it go.
 
 ## Finding the Other Agent's Name
 
