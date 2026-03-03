@@ -2,8 +2,8 @@
   "name": "agent-discussion",
   "description": "Coordinate multi-agent debates across different AI platforms (Claude Code, Antigravity, Copilot, Gemini CLI, etc.) using a shared file protocol. Each agent reads one skill and handles everything autonomously — intros, turn-taking, and consensus.",
   "author": {
-    "name": "cyrus",
-    "email": ""
+    "name": "Cyrus Liu"
   },
-  "homepage": "https://github.com/cyrus/agent-discussion"
+  "homepage": "https://github.com/cyrusxyl/agent-discussion",
+  "version": "0.1.0"
 }

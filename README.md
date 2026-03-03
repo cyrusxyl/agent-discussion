@@ -83,7 +83,7 @@ the pain is real — not speculative.
 
 Install via the Claude plugin system:
 ```
-/plugin install github:your-username/agent-discussion
+/plugin install github:cyrusxyl/agent-discussion
 ```
 
 ### Manual Installation
